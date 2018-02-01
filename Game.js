@@ -52,16 +52,20 @@ Game.prototype.load = function () {
 
   document.addEventListener('keydown', e => {
     switch (e.key) {
-      case 'ArrowDown':
-        this.move(0, 1)
-        break
       case 'ArrowUp':
+      case 'w':
         this.move(0, -1)
         break
       case 'ArrowLeft':
+      case 'a':
         this.move(-1, 0)
         break
+      case 'ArrowDown':
+      case 's':
+        this.move(0, 1)
+        break
       case 'ArrowRight':
+      case 'd':
         this.move(1, 0)
         break
       default:
@@ -85,7 +89,7 @@ Game.prototype.move = function move (x, y) {
 
 Game.prototype.renderScene = function () {
   this.drawBg()
-  // this.drawGrid('grey')
+  this.drawGrid('grey')
   this.drawTiles()
   this.drawHero()
 }
@@ -111,20 +115,13 @@ Game.prototype.drawHero = function () {
 Game.prototype.drawGrid = function (color) {
   var size = 32
 
-  this.ctx.strokeStyle = color
+  this.ctx.fillStyle = color
 
-  for (var i = 0; i < size; i++) {
-    var position = i * size
-
-    this.ctx.beginPath()
-    this.ctx.moveTo(position, 0)
-    this.ctx.lineTo(position, 512)
-    this.ctx.stroke()
-
-    this.ctx.beginPath()
-    this.ctx.moveTo(0, position)
-    this.ctx.lineTo(512, position)
-    this.ctx.stroke()
+  for (let x = 0; x < size; x++) {
+    for (let y = 0; y < size; y++) {
+      this.ctx.fillRect(x * size, y * size, 2, 512)
+      this.ctx.fillRect(x * size, y * size, 512, 2)
+    }
   }
 }
 
