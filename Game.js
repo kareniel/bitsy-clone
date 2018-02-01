@@ -1,25 +1,23 @@
 var html = require('choo/html')
 var Component = require('nanocomponent')
-var randomBytes = require('randombytes')
+var Scene = require('./Scene')
+var Texture = require('./Texture')
+var { cat } = require('./textures')
 
-var hero = [
-  '00000000',
-  '00000000',
-  '01010001',
-  '01110001',
-  '01110010',
-  '01111100',
-  '00111100',
-  '00100100'
-]
+var hero = Texture(cat)
 
 function Game () {
   if (!(this instanceof Game)) return new Game()
 
   this.tileColor = 'blue'
   this.bgColor = 'white'
-  this.tiles = Array(16).fill('').map(_ => Array(16).fill('0').map(_ => emptyTile()))
-  this.player = {x: 0, y: 0}
+  this.scene = Scene()
+  this.player = {
+    position: {
+      x: 2,
+      y: 2
+    }
+  }
 
   Component.call(this)
 }
@@ -73,20 +71,23 @@ Game.prototype.load = function () {
 }
 
 Game.prototype.move = function move (x, y) {
-  var nextX = this.player.x + x
-  var nextY = this.player.y + y
+  var nextPosition = {
+    x: this.player.position.x + x,
+    y: this.player.position.y + y
+  }
 
-  this.player.x = (nextX > 15 || nextX < 0) ? this.player.x : nextX
-  this.player.y = (nextY > 15 || nextY < 0) ? this.player.y : nextY
+  this.player.position = this.scene.collision(nextPosition)
+    ? this.player.position
+    : nextPosition
 
   this.renderScene()
 }
 
 Game.prototype.renderScene = function () {
   this.drawBg()
+  // this.drawGrid('grey')
   this.drawTiles()
   this.drawHero()
-  this.drawGrid('grey')
 }
 
 Game.prototype.drawBg = function () {
@@ -95,15 +96,16 @@ Game.prototype.drawBg = function () {
 }
 
 Game.prototype.drawTiles = function () {
-  this.tiles.forEach((row, y) => {
-    row.forEach((tile, x) => {
-      this._drawTile(tile, { x, y }, this.tileColor)
+  this.scene.tileMap.forEach((row, y) => {
+    row.forEach((tileId, x) => {
+      var tile = this.scene.tiles[tileId]
+      this._drawTile(tile.texture, { x, y }, this.tileColor)
     })
   })
 }
 
 Game.prototype.drawHero = function () {
-  this._drawTile(hero, this.player, 'red')
+  this._drawTile(hero, this.player.position, 'red')
 }
 
 Game.prototype.drawGrid = function (color) {
@@ -127,11 +129,9 @@ Game.prototype.drawGrid = function (color) {
 }
 
 Game.prototype._drawTile = function (tile, position, color) {
-  var rows = tile
-
-  rows.forEach((row, rowIndex) => {
-    row.split('').forEach((col, colIndex) => {
-      if (+col) {
+  tile.forEach((row, rowIndex) => {
+    row.forEach((col, colIndex) => {
+      if (col) {
         var x = (position.x * 32) + (colIndex * 4)
         var y = (position.y * 32) + (rowIndex * 4)
 
@@ -143,15 +143,3 @@ Game.prototype._drawTile = function (tile, position, color) {
 }
 
 module.exports = Game
-
-function emptyTile () {
-  return Array(8).fill('00000000')
-}
-
-function randomTile () {
-  var rows = []
-  randomBytes(8).forEach(byte => {
-    rows.push(byte.toString(2).padStart(8, '0'))
-  })
-  return rows
-}
