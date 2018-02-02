@@ -1,23 +1,9 @@
 var html = require('choo/html')
 var Component = require('nanocomponent')
 var Scene = require('./Scene')
-var Texture = require('./Texture')
-var { cat } = require('./textures')
-
-var hero = Texture(cat)
 
 function Game () {
   if (!(this instanceof Game)) return new Game()
-
-  this.tileColor = 'blue'
-  this.bgColor = 'white'
-  this.scene = Scene()
-  this.player = {
-    position: {
-      x: 2,
-      y: 2
-    }
-  }
 
   Component.call(this)
 }
@@ -28,9 +14,12 @@ Game.prototype.createElement = function (state, emit) {
   this.state = state
   this.emit = emit
 
+  this.scene = Scene(state, emit)
+
   if (!this.el) {
     this.el = html`
-      <canvas width="512" height="512" style="border: 1px solid grey"> 
+      <canvas width="512" height="512">
+        
       </canvas>`
     this.ctx = this.el.getContext('2d')
   }
@@ -42,13 +31,13 @@ Game.prototype.update = function (state, emit) {
   this.state = state
   this.emit = emit
 
-  this.renderScene()
+  this.scene.render(this.ctx)
 
   return false
 }
 
 Game.prototype.load = function () {
-  this.renderScene()
+  this.scene.render(this.ctx)
 
   document.addEventListener('keydown', e => {
     switch (e.key) {
@@ -76,67 +65,15 @@ Game.prototype.load = function () {
 
 Game.prototype.move = function move (x, y) {
   var nextPosition = {
-    x: this.player.position.x + x,
-    y: this.player.position.y + y
+    x: this.state.player.position.x + x,
+    y: this.state.player.position.y + y
   }
 
-  this.player.position = this.scene.collision(nextPosition)
-    ? this.player.position
+  this.state.player.position = this.scene.collision(nextPosition)
+    ? this.state.player.position
     : nextPosition
 
-  this.renderScene()
+  this.scene.render(this.ctx)
 }
 
-Game.prototype.renderScene = function () {
-  this.drawBg()
-  this.drawGrid('grey')
-  this.drawTiles()
-  this.drawHero()
-}
-
-Game.prototype.drawBg = function () {
-  this.ctx.fillStyle = this.bgColor
-  this.ctx.fillRect(0, 0, 512, 512)
-}
-
-Game.prototype.drawTiles = function () {
-  this.scene.tileMap.forEach((row, y) => {
-    row.forEach((tileId, x) => {
-      var tile = this.scene.tiles[tileId]
-      this._drawTile(tile.texture, { x, y }, this.tileColor)
-    })
-  })
-}
-
-Game.prototype.drawHero = function () {
-  this._drawTile(hero, this.player.position, 'red')
-}
-
-Game.prototype.drawGrid = function (color) {
-  var size = 32
-
-  this.ctx.fillStyle = color
-
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
-      this.ctx.fillRect(x * size, y * size, 2, 512)
-      this.ctx.fillRect(x * size, y * size, 512, 2)
-    }
-  }
-}
-
-Game.prototype._drawTile = function (tile, position, color) {
-  tile.forEach((row, rowIndex) => {
-    row.forEach((col, colIndex) => {
-      if (col) {
-        var x = (position.x * 32) + (colIndex * 4)
-        var y = (position.y * 32) + (rowIndex * 4)
-
-        this.ctx.fillStyle = color
-        this.ctx.fillRect(x, y, 4, 4)
-      }
-    })
-  })
-}
-
-module.exports = Game
+module.exports = Game()
