@@ -1,5 +1,4 @@
 var nanobus = require('nanobus')
-var sleep = require('hypno')
 var Bitmap = require('./Bitmap')
 
 function MessageBox (ctx, msg) {

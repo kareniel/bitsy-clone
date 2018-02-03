@@ -1,7 +1,8 @@
 var choo = require('choo')
 var html = require('choo/html')
 
-var game = require('./Game')
+var data = require('./game-data')
+var game = require('./src/Game')
 
 var app = choo()
 
@@ -16,8 +17,6 @@ app.route('*', function main (state, emit) {
 app.mount('body')
 
 function store (state, emitter) {
-  var data = require('./game-data')
-
   state.tiles = data.tiles
   state.gameEvents = data.gameEvents
   state.scene = data.scene

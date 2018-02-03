@@ -1,7 +1,7 @@
-var Bitmap = require('./Bitmap')
+var Bitmap = require('./src/Bitmap')
 
-var textures = require('./textures')
-var layouts = require('./layouts')
+var textures = require('./data/textures')
+var layouts = require('./data/layouts')
 
 module.exports = {
   tiles: [{

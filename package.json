@@ -4,7 +4,7 @@
   "description": "a bitsy clone",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js --live --css style.css",
+    "start": "budo index.js --live --css assets/style.css --  -t sheetify",
     "build": "bankai build index.js dist",
     "test": "node test"
   },
@@ -16,6 +16,7 @@
   "devDependencies": {
     "bankai": "^9.4.1",
     "budo": "^11.0.1",
+    "sheetify": "^7.1.0",
     "standard": "^10.0.3"
   },
   "dependencies": {

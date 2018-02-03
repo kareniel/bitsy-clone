@@ -1,4 +1,5 @@
 var html = require('choo/html')
+var css = require('sheetify')
 var Component = require('nanocomponent')
 var Scene = require('./Scene')
 var nanobus = require('nanobus')
@@ -17,11 +18,25 @@ Game.prototype.createElement = function (state, emit) {
   this._emit = emit
 
   if (!this.el) {
+    var prefix = css`
+      @font-face {
+        font-family: 'msx';
+        src: url('assets/MSX-Screen0.ttf') format("truetype");
+      }
+
+      :host {
+        font-smooth: never;
+        text-rendering: geometricPrecision !important;
+        -webkit-font-smoothing: none !important;
+      }
+    `
+
     this.el = html`
       <canvas 
         tabindex=0
         width="512" 
         height="512"
+        class=${prefix}
         onkeypress=${this.handleKeyDown.bind(this)}>
         
       </canvas>`
