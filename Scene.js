@@ -35,7 +35,6 @@ Scene.prototype.render = function (ctx) {
   this.drawTiles()
   this.drawHero()
   this.drawEventTiles()
-  this.drawGrid()
 }
 
 Scene.prototype.drawBg = function () {
@@ -58,24 +57,11 @@ Scene.prototype.drawHero = function () {
 
 Scene.prototype.drawEventTiles = function () {
   this.eventMap.layout.forEach((row, y) => {
-    row.forEach((tileId, x) => {
-      var tile = this.tiles[tileId]
+    row.forEach((eventId, x) => {
+      var tile = this.gameEvents[eventId]
       this._drawTile(tile.texture, { x, y }, this.colors.sprite)
     })
   })
-}
-
-Scene.prototype.drawGrid = function () {
-  var size = 32
-
-  this.ctx.fillStyle = 'white'
-
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
-      this.ctx.fillRect(x * size, y * size, 1, 512)
-      this.ctx.fillRect(x * size, y * size, 512, 1)
-    }
-  }
 }
 
 Scene.prototype._drawTile = function (tile, position, color) {

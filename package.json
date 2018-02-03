@@ -4,7 +4,7 @@
   "description": "a bitsy clone",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js --live",
+    "start": "budo index.js --live --css style.css",
     "build": "bankai build index.js dist",
     "test": "node test"
   },

@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'msx';
+  src: url('MSX-Screen0.ttf') format("truetype");
+}
+
+canvas {
+  font-smooth: never;
+  text-rendering: geometricPrecision !important;
+  -webkit-font-smoothing: none !important;
+}
