@@ -13,7 +13,8 @@ function Game () {
   this.messageBox = null
 
   this.emitter.on('message', msg => {
-    this.messageBox = MessageBox(this.ctx, msg)
+    this.messageBox = MessageBox(this.ctx)
+    this.messageBox.dialog(msg)
     this.messageBox.on('close', () => {
       this.messageBox = null
       this.draw()

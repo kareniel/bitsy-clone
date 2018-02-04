@@ -3,11 +3,9 @@ function Player (scene, vector) {
 
   this.scene = scene
   this.position = vector
-  console.log(this)
 }
 
 Player.prototype.move = function (vector) {
-  console.log(vector)
   var nextPosition = {
     x: this.position.x + vector.x,
     y: this.position.y + vector.y
