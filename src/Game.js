@@ -49,7 +49,7 @@ Game.prototype.createElement = function (state, emit) {
       width="512" 
       height="512"
       class=${prefix}
-      onkeypress=${this.handleKeyDown.bind(this)}>
+      onkeydown=${this.handleKeyDown.bind(this)}>
       
     </canvas>`
   this.ctx = this.el.getContext('2d', {alpha: false})
@@ -109,6 +109,8 @@ Game.prototype.handleKeyDown = function (e) {
 }
 
 Game.prototype.drawGrid = function () {
+  if (!this.state.config.grid) return
+
   var size = 32
 
   this.ctx.fillStyle = 'white'

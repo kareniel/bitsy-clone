@@ -4,6 +4,9 @@ var textures = require('./data/textures')
 var layouts = require('./data/layouts')
 
 module.exports = {
+  config: {
+    grid: false
+  },
   tiles: [{
     texture: Bitmap.empty()
   }, {

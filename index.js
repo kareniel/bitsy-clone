@@ -21,4 +21,5 @@ function store (state, emitter) {
   state.gameEvents = data.gameEvents
   state.scene = data.scene
   state.player = data.player
+  state.config = data.config
 }
