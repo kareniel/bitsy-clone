@@ -21,7 +21,7 @@ Game.prototype.createElement = function (state, emit) {
     var prefix = css`
       @font-face {
         font-family: 'msx';
-        src: url('assets/MSX-Screen0.ttf') format("truetype");
+        src: url('/assets/MSX-Screen0.ttf') format("truetype");
       }
 
       :host {
