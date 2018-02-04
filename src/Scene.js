@@ -15,17 +15,21 @@ function Scene (state, emit) {
   this.emit = emit
 }
 
-Scene.prototype.collision = function (pos) {
-  if (outOfBounds(pos)) return true
+Scene.prototype.collides = function (vector) {
+  if (this._outOfBounds(vector)) return true
 
-  var tileId = this.tileMap.layout[pos.y][pos.x]
-  var eventId = this.eventMap.layout[pos.y][pos.x]
+  var tileId = this.tileMap.layout[vector.y][vector.x]
+  var eventId = this.eventMap.layout[vector.y][vector.x]
   var tile = this.tiles[tileId]
   var event = this.gameEvents[eventId]
 
   if (typeof event.interact === 'function') event.interact.call(this)
 
   return tile.blocking || event.blocking
+}
+
+Scene.prototype._outOfBounds = function (vector) {
+  return vector.x < 0 || vector.y < 0 || vector.x > 15 || vector.y > 15
 }
 
 Scene.prototype.render = function (ctx) {
@@ -76,10 +80,6 @@ Scene.prototype._drawTile = function (tile, position, color) {
       }
     })
   })
-}
-
-function outOfBounds (pos) {
-  return pos.x < 0 || pos.y < 0 || pos.x > 15 || pos.y > 15
 }
 
 module.exports = Scene

@@ -1,46 +1,60 @@
 var nanobus = require('nanobus')
 var Bitmap = require('./Bitmap')
+const MS_PER_LETTER = 100
+const POSITIONS = ['top', 'center', 'bottom']
+const DEFAULT_CURSOR = '11111\n01110\n00100'
+const DEFAULT_FONT = 'normal 400 16px msx'
 
-function MessageBox (ctx, msg) {
-  if (!(this instanceof MessageBox)) return new MessageBox(ctx, msg)
+function MessageBox (ctx) {
+  if (!(this instanceof MessageBox)) return new MessageBox(ctx)
 
   nanobus.call(this)
 
   this.ctx = ctx
-  this.rendering = true
-  this.message = msg
-  this.letters = []
-  this.closed = false
 
-  this.draw()
+  this.text = ''
+  this.letters = []
+  this.visible = true
+  this.rendering = true
+  this.position = POSITIONS[1]
+  this.speed = MS_PER_LETTER
 }
 
 MessageBox.prototype = Object.create(nanobus.prototype)
 
+MessageBox.prototype.dialog = function (text) {
+  this.text = text
+  this.letters = []
+  this.draw()
+}
+
 MessageBox.prototype.draw = function () {
-  if (this.closed) return
+  if (!this.visible) return
 
   this._drawBg()
 
-  if (this.letters.length === this.message.length) {
+  // finish rendering, show cursor
+  if (this.letters.length === this.text.length) {
     this.rendering = false
     this._drawLetters()
     this._drawCursor()
     return
   }
 
-  this.letters.push(this.message[this.letters.length])
+  // draw the next letter
+  this.letters.push(this.text[this.letters.length])
   this._drawLetters()
 
+  // wait s seconds and draw the next letter
   var timer = setTimeout(() => {
     clearTimeout(timer)
     this.draw()
-  }, 100)
+  }, this.speed)
 }
 
 MessageBox.prototype.handleKeyDown = function () {
   if (this.rendering) {
-    this.letters = this.message.split('')
+    this.letters = this.text.split('')
   } else {
     this.closed = true
     this.emit('close')
@@ -53,18 +67,22 @@ MessageBox.prototype._drawBg = function () {
 }
 
 MessageBox.prototype._drawLetters = function () {
-  // max char length 31 & 28
-  // lines are 24px appart
+  var text = this.letters.join('')
+  var line1 = text.slice(0, 31)
+  var line2 = text.slice(31, 28)
 
   this.ctx.fillStyle = 'white'
-  this.ctx.font = 'normal 400 16px msx'
+  this.ctx.font = DEFAULT_FONT
   this.ctx.imageSmoothingEnabled = false
-  this.ctx.fillText(this.letters.join(''), 68, 78)
+
+  this.ctx.fillText(line1, 68, 78)
+  this.ctx.fillText(line2, 68, 78 + 24)
 }
+
 MessageBox.prototype._drawCursor = function () {
   this.ctx.fillStyle = 'white'
 
-  var sprite = Bitmap('11111\n01110\n00100')
+  var sprite = Bitmap(DEFAULT_CURSOR)
 
   sprite.forEach((row, rowIndex) => {
     row.forEach((col, colIndex) => {

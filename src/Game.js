@@ -1,12 +1,24 @@
 var html = require('choo/html')
 var css = require('sheetify')
 var Component = require('nanocomponent')
+var MessageBox = require('./MessageBox')
 var Scene = require('./Scene')
 var nanobus = require('nanobus')
-var MessageBox = require('./MessageBox')
+var Player = require('./Player')
 
 function Game () {
   if (!(this instanceof Game)) return new Game()
+
+  this.emitter = nanobus()
+  this.messageBox = null
+
+  this.emitter.on('message', msg => {
+    this.messageBox = MessageBox(this.ctx, msg)
+    this.messageBox.on('close', () => {
+      this.messageBox = null
+      this.draw()
+    })
+  })
 
   Component.call(this)
 }
@@ -17,33 +29,39 @@ Game.prototype.createElement = function (state, emit) {
   this.state = state
   this._emit = emit
 
-  if (!this.el) {
-    var prefix = css`
-      @font-face {
-        font-family: 'msx';
-        src: url('/assets/MSX-Screen0.ttf') format("truetype");
-      }
+  var prefix = css`
+    @font-face {
+      font-family: 'msx';
+      src: url('/assets/MSX-Screen0.ttf') format("truetype");
+    }
 
-      :host {
-        font-smooth: never;
-        text-rendering: geometricPrecision !important;
-        -webkit-font-smoothing: none !important;
-      }
-    `
+    :host {
+      font-smooth: never;
+      text-rendering: geometricPrecision !important;
+      -webkit-font-smoothing: none !important;
+    }
+  `
 
-    this.el = html`
-      <canvas 
-        tabindex=0
-        width="512" 
-        height="512"
-        class=${prefix}
-        onkeypress=${this.handleKeyDown.bind(this)}>
-        
-      </canvas>`
-    this.ctx = this.el.getContext('2d', {alpha: false})
-  }
+  this.el = html`
+    <canvas 
+      tabindex=0
+      width="512" 
+      height="512"
+      class=${prefix}
+      onkeypress=${this.handleKeyDown.bind(this)}>
+      
+    </canvas>`
+  this.ctx = this.el.getContext('2d', {alpha: false})
 
   return this.el
+}
+
+Game.prototype.load = function (el) {
+  this.scene = Scene(this.state, this.emitter.emit.bind(this.emitter))
+  this.player = Player(this.scene, this.state.player.position)
+
+  this.el.focus()
+  this.draw()
 }
 
 Game.prototype.update = function (state, emit) {
@@ -53,23 +71,6 @@ Game.prototype.update = function (state, emit) {
   this.draw()
 
   return false
-}
-
-Game.prototype.load = function (el) {
-  this.el.focus()
-
-  this.emitter = nanobus()
-  this.scene = Scene(this.state, this.emitter.emit.bind(this.emitter))
-
-  this.emitter.on('message', msg => {
-    this.messageBox = MessageBox(this.ctx, msg)
-    this.messageBox.on('close', () => {
-      this.messageBox = null
-      this.draw()
-    })
-  })
-
-  this.draw()
 }
 
 Game.prototype.draw = function () {
@@ -85,34 +86,23 @@ Game.prototype.handleKeyDown = function (e) {
   switch (e.key) {
     case 'ArrowUp':
     case 'w':
-      this.move(0, -1)
+      this.player.move({ x: 0, y: -1 })
       break
     case 'ArrowLeft':
     case 'a':
-      this.move(-1, 0)
+      this.player.move({ x: -1, y: 0 })
       break
     case 'ArrowDown':
     case 's':
-      this.move(0, 1)
+      this.player.move({ x: 0, y: 1 })
       break
     case 'ArrowRight':
     case 'd':
-      this.move(1, 0)
+      this.player.move({ x: 1, y: 0 })
       break
     default:
       break
   }
-}
-
-Game.prototype.move = function move (x, y) {
-  var nextPosition = {
-    x: this.state.player.position.x + x,
-    y: this.state.player.position.y + y
-  }
-
-  this.state.player.position = this.scene.collision(nextPosition)
-    ? this.state.player.position
-    : nextPosition
 
   this.draw()
 }
