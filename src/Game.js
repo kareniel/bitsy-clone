@@ -28,6 +28,7 @@ Game.prototype.createElement = function (state, emit) {
       font-smooth: never;
       text-rendering: geometricPrecision !important;
       -webkit-font-smoothing: none !important;
+      box-shadow: 2px 2px 5px rgba(26,32,38,0.3);
     }
   `
 
@@ -58,6 +59,7 @@ Game.prototype.load = function (el) {
 }
 
 Game.prototype.update = function (state, emit) {
+  console.log('update')
   this.state = state
   this._emit = emit
 
@@ -68,6 +70,7 @@ Game.prototype.update = function (state, emit) {
 
 Game.prototype.draw = function () {
   if (this.cleared) return
+  console.log('draw')
   this.scene.render(this.ctx)
   this.drawGrid()
 }
@@ -159,13 +162,14 @@ Game.prototype.drawGrid = function () {
 
   var size = 32
 
-  this.ctx.fillStyle = 'white'
+  this.ctx.fillStyle = '#272F35'
 
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
-      this.ctx.fillRect(x * size, y * size, 1, 512)
-      this.ctx.fillRect(x * size, y * size, 512, 1)
-    }
+  for (var x = 1; x < 16; x++) {
+    this.ctx.fillRect(x * size, 0, 1, 512)
+  }
+
+  for (var y = 1; y < 16; y++) {
+    this.ctx.fillRect(0, y * size, 512, 1)
   }
 }
 

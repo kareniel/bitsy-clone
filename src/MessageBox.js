@@ -16,7 +16,7 @@ function MessageBox (ctx) {
   this.letters = []
   this.visible = true
   this.rendering = true
-  this.position = POSITIONS[1]
+  this.position = POSITIONS[0]
   this.speed = MS_PER_LETTER
 }
 

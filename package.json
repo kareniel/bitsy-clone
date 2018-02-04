@@ -4,9 +4,14 @@
   "description": "a bitsy clone",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js --live --  -t sheetify",
+    "start": "budo index.js --live",
     "build": "bankai build index.js dist",
     "test": "node test"
+  },
+  "browserify": {
+    "transform": [
+      "sheetify/transform"
+    ]
   },
   "keywords": [
     "bitsy"
@@ -17,7 +22,8 @@
     "bankai": "^9.4.1",
     "budo": "^11.0.1",
     "sheetify": "^7.1.0",
-    "standard": "^10.0.3"
+    "standard": "^10.0.3",
+    "tachyons": "^4.9.1"
   },
   "dependencies": {
     "choo": "^6.7.0",
