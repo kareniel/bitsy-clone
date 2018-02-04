@@ -1,8 +1,8 @@
-function Player (scene, vector) {
-  if (!(this instanceof Player)) return new Player(scene, vector)
+function Player (texture) {
+  if (!(this instanceof Player)) return new Player(texture)
 
-  this.scene = scene
-  this.position = vector
+  this.position = {}
+  this.texture = texture
 }
 
 Player.prototype.move = function (vector) {
@@ -21,8 +21,8 @@ Player.prototype._move = function (position) {
   this.position.y = position.y
 }
 
-Player.prototype.teleport = function (scene, vector) {
-  this.scene = scene
+Player.prototype.teleport = function (vector, scene) {
+  if (scene) this.scene = scene
   this._move(vector)
 }
 

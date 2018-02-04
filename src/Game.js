@@ -9,18 +9,6 @@ var Player = require('./Player')
 function Game () {
   if (!(this instanceof Game)) return new Game()
 
-  this.emitter = nanobus()
-  this.messageBox = null
-
-  this.emitter.on('message', msg => {
-    this.messageBox = MessageBox(this.ctx)
-    this.messageBox.dialog(msg)
-    this.messageBox.on('close', () => {
-      this.messageBox = null
-      this.draw()
-    })
-  })
-
   Component.call(this)
 }
 
@@ -58,9 +46,13 @@ Game.prototype.createElement = function (state, emit) {
 }
 
 Game.prototype.load = function (el) {
-  this.scene = Scene(this.state, this.emitter.emit.bind(this.emitter))
-  this.player = Player(this.scene, this.state.player.position)
+  this.emitter = nanobus()
+  this.messageBox = null
+  this.player = Player(this.state.player.texture)
+  this.loadScene(this.state.scenes[0])
+  this.player.teleport(this.state.player.position, this.scene)
 
+  this.loadGameEventHandlers()
   this.el.focus()
   this.draw()
 }
@@ -75,6 +67,7 @@ Game.prototype.update = function (state, emit) {
 }
 
 Game.prototype.draw = function () {
+  if (this.cleared) return
   this.scene.render(this.ctx)
   this.drawGrid()
 }
@@ -108,6 +101,59 @@ Game.prototype.handleKeyDown = function (e) {
   this.draw()
 }
 
+Game.prototype.loadGameEventHandlers = function () {
+  this.emitter.on('message', message.bind(this))
+  this.emitter.on('teleport', teleport.bind(this))
+  this.emitter.on('ending', ending.bind(this))
+
+  function message (msg) {
+    this.messageBox = MessageBox(this.ctx)
+    this.messageBox.dialog(msg)
+    this.messageBox.on('close', () => {
+      this.messageBox = null
+      this.draw()
+    })
+  }
+
+  function teleport (payload) {
+    var parts = payload.split('\n').map(h => parseInt(h, 2))
+
+    var sceneId = parts[0]
+    var x = parts[1]
+    var y = parts[2]
+
+    var scene = this.state.scenes[sceneId]
+    var position = { x, y }
+
+    this.loadScene(scene)
+    this.player.teleport(position, this.scene)
+  }
+
+  function ending (msg) {
+    this.ctx.fillStyle = 'white'
+    this.ctx.fillRect(0, 0, 512, 512)
+    this.cleared = true
+
+    this.messageBox = MessageBox(this.ctx)
+    this.messageBox.dialog(msg)
+    this.messageBox.on('close', () => {
+      this.messageBox = null
+      this.reset()
+    })
+  }
+}
+
+Game.prototype.loadScene = function (scene) {
+  var state = {
+    player: this.player,
+    tiles: this.state.tiles,
+    gameEvents: this.state.gameEvents,
+    scene: scene
+  }
+
+  this.scene = Scene(state, this.emitter.emit.bind(this.emitter))
+}
+
 Game.prototype.drawGrid = function () {
   if (!this.state.config.grid) return
 
@@ -121,6 +167,11 @@ Game.prototype.drawGrid = function () {
       this.ctx.fillRect(x * size, y * size, 512, 1)
     }
   }
+}
+
+Game.prototype.reset = function () {
+  this.cleared = false
+  this.load()
 }
 
 module.exports = Game()

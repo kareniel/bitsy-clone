@@ -23,7 +23,9 @@ Scene.prototype.collides = function (vector) {
   var tile = this.tiles[tileId]
   var event = this.gameEvents[eventId]
 
-  if (typeof event.interact === 'function') event.interact.call(this)
+  if (event.type && event.payload) {
+    this.emit(event.type, event.payload)
+  }
 
   return tile.blocking || event.blocking
 }
@@ -63,7 +65,7 @@ Scene.prototype.drawEventTiles = function () {
   this.eventMap.layout.forEach((row, y) => {
     row.forEach((eventId, x) => {
       var tile = this.gameEvents[eventId]
-      this._drawTile(tile.texture, { x, y }, this.colors.sprite)
+      if (tile.texture) this._drawTile(tile.texture, { x, y }, this.colors.sprite)
     })
   })
 }

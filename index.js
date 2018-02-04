@@ -19,7 +19,7 @@ app.mount('body')
 function store (state, emitter) {
   state.tiles = data.tiles
   state.gameEvents = data.gameEvents
-  state.scene = data.scene
+  state.scenes = data.scenes
   state.player = data.player
   state.config = data.config
 }

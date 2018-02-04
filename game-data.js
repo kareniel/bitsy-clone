@@ -20,9 +20,24 @@ module.exports = {
     id: 'cat',
     texture: Bitmap(textures.cat),
     blocking: true,
-    interact: function () {
-      this.emit('message', 'The cat purrs.')
-    }
+    type: 'message',
+    payload: 'The cat purrs.'
+  }, {
+    id: 'to-room-2',
+    type: 'teleport',
+    payload: '01\n1110\n11',
+    blocking: true
+  }, {
+    id: 'to-room-1',
+    type: 'teleport',
+    payload: '00\n01\n11',
+    blocking: true
+  }, {
+    id: 'the-end',
+    texture: Bitmap(textures.x),
+    type: 'ending',
+    payload: 'The end.',
+    blocking: true
   }],
   player: {
     texture: Bitmap(textures.hero),
@@ -31,19 +46,29 @@ module.exports = {
       y: 4
     }
   },
-  scene: {
+  scenes: [{
     colors: {
       bg: '#0052cc',
       tile: '#809fff',
       sprite: 'white'
     },
     tileMap: {
-      id: 'default',
-      layout: Bitmap(layouts.default.tiles)
+      layout: Bitmap(layouts.room1.tiles)
     },
     eventMap: {
-      id: 'default',
-      layout: Bitmap(layouts.default.events)
+      layout: Bitmap(layouts.room1.events)
     }
-  }
+  }, {
+    colors: {
+      bg: '#0052cc',
+      tile: '#809fff',
+      sprite: 'white'
+    },
+    tileMap: {
+      layout: Bitmap(layouts.room2.tiles)
+    },
+    eventMap: {
+      layout: Bitmap(layouts.room2.events)
+    }
+  }]
 }
