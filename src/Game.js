@@ -70,7 +70,7 @@ Game.prototype.update = function (state, emit) {
 
 Game.prototype.draw = function () {
   if (this.cleared) return
-  console.log('draw')
+
   this.scene.render(this.ctx)
   this.drawGrid()
 }

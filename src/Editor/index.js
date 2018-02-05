@@ -2,6 +2,8 @@ var html = require('choo/html')
 var Component = require('nanocomponent')
 var css = require('sheetify')
 
+var tileSelector = require('./TileSelector')
+
 css('tachyons')
 
 function Editor (game) {
@@ -26,6 +28,7 @@ Editor.prototype.createElement = function (state, emit) {
     .ui {
       background-color: #445157;
       border: 1px solid #15181D;
+      z-index: 3;
     }`
 
   this.el = html`
@@ -34,8 +37,17 @@ Editor.prototype.createElement = function (state, emit) {
         <input id="grid-toggle" type="checkbox" checked=${state.config.grid} onchange=${e => emit('toggle-grid')} />
         <label for="grid-toggle" class="mh2 white">toggle grid</label>
       </div>
-      <div>
-        ${this.game.render(state, emit)}
+      <div class="flex flex-auto w-100 flex-row justify-between">
+        <div class="ui w5 "></div>
+        <div class="flex flex-auto justify-center items-center">
+          ${this.game.render(state, emit)}
+        </div>
+        <div class="ui pa2">
+          <p class="moon-gray">tileset</p>
+          <div class="overflow-y-scroll  pr3" style="height: 512px;">
+            ${tileSelector.render(state.tiles, emit)}
+          </div>
+        </div>
       </div>
       <div class="pa2 ui w-100">
       </div>
@@ -44,7 +56,6 @@ Editor.prototype.createElement = function (state, emit) {
 }
 
 Editor.prototype.update = function (state, emit) {
-  console.log('update')
   this.state = state
   this.emit = emit
 
