@@ -59,7 +59,6 @@ Game.prototype.load = function (el) {
 }
 
 Game.prototype.update = function (state, emit) {
-  console.log('update')
   this.state = state
   this._emit = emit
 
@@ -72,7 +71,6 @@ Game.prototype.draw = function () {
   if (this.cleared) return
 
   this.scene.render(this.ctx)
-  this.drawGrid()
 }
 
 Game.prototype.handleKeyDown = function (e) {
@@ -157,25 +155,9 @@ Game.prototype.loadScene = function (scene) {
   this.scene = Scene(state, this.emitter.emit.bind(this.emitter))
 }
 
-Game.prototype.drawGrid = function () {
-  if (!this.state.config.grid) return
-
-  var size = 32
-
-  this.ctx.fillStyle = '#272F35'
-
-  for (var x = 1; x < 16; x++) {
-    this.ctx.fillRect(x * size, 0, 1, 512)
-  }
-
-  for (var y = 1; y < 16; y++) {
-    this.ctx.fillRect(0, y * size, 512, 1)
-  }
-}
-
 Game.prototype.reset = function () {
   this.cleared = false
   this.load()
 }
 
-module.exports = Game()
+module.exports = Game

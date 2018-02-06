@@ -1,15 +1,16 @@
 var html = require('choo/html')
 var Component = require('nanocomponent')
 var css = require('sheetify')
+var Game = require('../Game')
 
 var tileSelector = require('./TileSelector')
 
 css('tachyons')
 
-function Editor (game) {
-  if (!(this instanceof Editor)) return new Editor(game)
+function Editor () {
+  if (!(this instanceof Editor)) return new Editor()
 
-  this.game = game
+  this.game = Game()
 
   Component.call(this)
 }
@@ -33,19 +34,22 @@ Editor.prototype.createElement = function (state, emit) {
 
   this.el = html`
     <div class="${prefix} flex flex-column w-100 min-vh-100 justify-between items-center">
+      ${gameModal.call(this, state, emit)}
+      
       <div class="ph2 pv3 ui w-100">
+        <button class="mr3" onclick=${e => emit('play')}>play</button>
         <input id="grid-toggle" type="checkbox" checked=${state.config.grid} onchange=${e => emit('toggle-grid')} />
         <label for="grid-toggle" class="mh2 white">toggle grid</label>
       </div>
       <div class="flex flex-auto w-100 flex-row justify-between">
         <div class="ui w5 "></div>
         <div class="flex flex-auto justify-center items-center">
-          ${this.game.render(state, emit)}
+         
         </div>
         <div class="ui pa2">
           <p class="moon-gray">tileset</p>
           <div class="overflow-y-scroll  pr3" style="height: 512px;">
-            ${tileSelector.render(state.tiles, emit)}
+            ${tileSelector.render(state.data.tiles, emit)}
           </div>
         </div>
       </div>
@@ -56,12 +60,25 @@ Editor.prototype.createElement = function (state, emit) {
 }
 
 Editor.prototype.update = function (state, emit) {
+  var changed = state.playing === this.state.playing
+
   this.state = state
   this.emit = emit
 
   this.game.render(state, emit)
 
-  return false
+  return changed
 }
 
-module.exports = Editor()
+module.exports = Editor
+
+function gameModal (state, emit) {
+  return !state.playing ? '' : html`
+    <div class="vw-100 vh-100 ba b--red flex items-center justify-center">
+      <div class="fixed left-0 top-0 w-100 h-100 bg-black-90 z-4"></div>
+      <button class="ma3 fixed right-0 top-0 z-4" onclick=${e => emit('play')}>x</button>
+      <div class="absolute z-5">
+        ${this.game.render(state.data, emit)}
+      </div>
+    </div>`
+}

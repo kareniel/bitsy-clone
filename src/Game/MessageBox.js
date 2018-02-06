@@ -1,5 +1,5 @@
 var nanobus = require('nanobus')
-var Bitmap = require('./Bitmap')
+var Bitmap = require('../Bitmap')
 const MS_PER_LETTER = 100
 const POSITIONS = ['top', 'center', 'bottom']
 const DEFAULT_CURSOR = '11111\n01110\n00100'
