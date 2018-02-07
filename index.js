@@ -17,6 +17,7 @@ app.route('*', function main (state, emit) {
 app.mount('body')
 
 function store (state, emitter) {
+  state.selectedTile = 0
   state.data = data
   state.playing = false
   state.config = {
@@ -31,6 +32,11 @@ function store (state, emitter) {
 
     emitter.on('play', () => {
       state.playing = !state.playing
+      emitter.emit('render')
+    })
+
+    emitter.on('select-tile', index => {
+      state.selectedTile = index
       emitter.emit('render')
     })
   })

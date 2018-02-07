@@ -11,12 +11,14 @@ function Bitmap (str) {
 Bitmap.empty = function (n = 8) {
   var rows = []
 
-  Array(n).forEach(_ => {
-    var row = Array(8).fill(0).join('')
+  Array(n).fill(0).forEach(_ => {
+    var row = Array(n).fill(0).join('')
     rows.push(row)
   })
 
   var str = rows.join('\n')
+
+  console.log(rows)
 
   return Bitmap(str)
 }

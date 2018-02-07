@@ -72,6 +72,7 @@ TileSelector.prototype.handleClick = function (e) {
 
 TileSelector.prototype.select = function (index) {
   this.selected = index
+  this.emit('select-tile', index)
   this.draw()
 }
 

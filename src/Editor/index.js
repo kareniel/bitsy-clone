@@ -3,6 +3,7 @@ var Component = require('nanocomponent')
 var css = require('sheetify')
 var Game = require('../Game')
 
+var sceneEditor = require('./SceneEditor')()
 var tileSelector = require('./TileSelector')
 
 css('tachyons')
@@ -44,7 +45,7 @@ Editor.prototype.createElement = function (state, emit) {
       <div class="flex flex-auto w-100 flex-row justify-between">
         <div class="ui w5 "></div>
         <div class="flex flex-auto justify-center items-center">
-         
+          ${sceneEditor.render(state, emit)}
         </div>
         <div class="ui pa2">
           <p class="moon-gray">tileset</p>
